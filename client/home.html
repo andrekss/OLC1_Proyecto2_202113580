@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/home.css">
+    <title>Proyecto 2</title>
+</head>
+<body>
+    <div>
+        <label for="Entrada" id="In">Entrada</label>
+        <textarea name="Entrada" id="Entrada"></textarea>
+        <input type="file" id="ArchivoIn" style="display: none;"> <!--Entrada del archivo -->
+        <button id="AbrirArchivo">Abrir Archivo</button>
+        <button id="Ejecutar">Ejecutar</button>
+
+        <script src="scripts/AbrirPegar.js"></script>
+        <script src="scripts/Ejecutar.js"></script>
+    </div>
+
+    <div>
+        <label for="Salida" id="Out">Salida en consola</label>
+        <textarea name="Salida" id="Salida" readonly></textarea>
+    </div>
+
+</body>
+</html>

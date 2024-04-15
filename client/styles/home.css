@@ -1,0 +1,30 @@
+#Entrada {
+  display: block;
+  width: 600px;
+  height: 600px;
+  font-size: 20px;
+}
+
+#In {
+  font-size: 20px;
+}
+
+#Out {
+  font-size: 20px;
+}
+
+#Salida {
+  display: block;
+  width: 600px;
+  height: 600px;
+  font-size: 20px;
+}
+
+body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
