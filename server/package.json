@@ -6,9 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "parser": "jison ./Language/gramatica.jison -o ./Language/Parser.js",
-    "dev": "nodemon ./build/index.js",
-    "debug": "nodemon --inspect ./build/index.js",
-    "build": "tsc -w"
+    "dev": "nodemon ./src/index.js",
+    "debug": "nodemon --inspect ./build/index.js"
   },
   "author": "Andrés Agosto",
   "license": "ISC",

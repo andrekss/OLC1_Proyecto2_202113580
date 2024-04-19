@@ -1,10 +1,6 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const Parser_js_1 = __importDefault(require("../Language/Parser.js"));
-const Entrada = `
+const Ejecutar = require("../Language/Parser.js");
+
+const Entrada =`
 // variables
 char as=true;
 int arnica1=1,a="2 as",ds=true,fs=121.2,argentina ='a';
@@ -206,8 +202,8 @@ int funcion2(int numero){
         10
         */
 
-`;
-const Entrada2 = `
+`
+const Entrada2 =`
 EXECUTE main();
 
 int var1 = 0;
@@ -244,7 +240,7 @@ void main(){
 void tablaMultiplicar(int valor){
     std::string cadenaSalida = "Final de la tabla de multiplicar";
     for(int i=1; i<=11; i++){
-        cout << valor + " x " + i + " = " + valor*i << endl;
+        cout << valor + " x " + i+pow(i,s) + " = " + valor*i << endl;
         if(i==11){
             cout << cadenaSalida << endl;
             break;
@@ -255,7 +251,7 @@ void tablaMultiplicar(int valor){
 // probando una funcion recursiva
 int mcd(int a, int b){
     if(b==0){
-        return a;
+        return pow(a,7);
     }else{
         return mdc(b, a%b);
     }
@@ -307,5 +303,6 @@ La suma de los elementos del arreglo es: 17
 La cantidad de ceros en el arreglo es: 8
 Fin de la prueba
 */
-`;
-Parser_js_1.default.parse(Entrada2);
+`
+
+Ejecutar.parse(Entrada2);

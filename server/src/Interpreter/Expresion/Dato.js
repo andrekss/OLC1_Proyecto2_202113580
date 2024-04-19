@@ -1,4 +1,4 @@
-const Instruccion = require("../Instruccion.js");
+const Instruccion = require("../instruccion.js");
 
 class Dato extends Instruccion{ // No terminal
     constructor(valor, tipo){
@@ -9,11 +9,11 @@ class Dato extends Instruccion{ // No terminal
 
     interpretar(entorno){
         switch(this.tipo){ // acomodamos los datos
-            case 'Int': return Number(this.valor);
-            case 'Double': return Number(this.valor);
-            case 'Bool': return Boolean(this.valor);
-            case 'Char': return CharacterData(this.valor);
-            case 'String': return this.valor;
+            case 'INT': return Number(this.valor);
+            case 'DOUBLE': return Number(this.valor);
+            case 'BOOL': return Boolean(this.valor);
+            case 'CHAR': return CharacterData(this.valor);
+            case 'STRING': return this.valor;
         }
     }
 

@@ -1,134 +1,11 @@
-// ################### ANALIZADOR LEXICO #######################
-%lex
-%options case-insensitive 
-
-// ---------> Expresiones Regulares
-entero  [0-9]+|'-'[0-9]+;
-decimal   {entero}'.'[0-9]+;
-booleano      "true"|"false";
-CADENA     "\""[^"\""]*"\"";
-CARACTER   "'"[^"'"]"'"| "'""'";
-Identificador [a-zA-Z][a-zA-Z0-9\_]*;
-
-%%
-// -----> Espacios en Blanco
-[ \s\r\n\t]             {/* Espacios se ignoran */}
-"//".*                  {/* Comentario de una linea */}
-"/*"[^]*?"*/"           {/* Comentario multilinea */}
-
-// -----> Reglas Lexicas
-
-
-"int"                    { return 'INT'; }
-"double"                 { return 'DOUBLE'; }
-"bool"                   { return 'BOOL'; }
-"Char"                   { return 'CHAR'; }
-"std::string"            { return 'STRING'; }
-
-"else"                   { return 'ELSE'; }
-"new"                    { return 'NEW'; }
-"if"                     { return 'IF'; }
-"switch"                 { return 'SWITCH'; }
-"case"                   { return 'CASE'; }
-"break"                  { return 'BREAK'; }
-"default"                { return 'DEFAULT'; }
-"continue"               { return 'CONTINUE'; }
-"return"                 { return 'RETURN'; }
-"void"                   { return 'VOID'; }
-"cout"                   { return 'COUT'; }
-"endl"                   { return 'ENDL'; }
-
-"pow"                    { return 'POW'; }
-"Tolower"                { return 'TOLOWER'; }
-"Toupper"                { return 'TOUPPER'; }
-"Round"                  { return 'ROUND'; }
-
-// Funciones Nativas
-"Length"                 { return 'LENGTH'; }
-"Typeof"                 { return 'TYPEOF'; }
-"std::ToString"          { return 'TOSTRING'; }
-"c_str"                  { return 'C_STR'; }
-"execute"                 { return 'EXECUTE'; }
-
-"do"                     { return 'DO'; }
-"while"                  { return 'WHILE'; }
-"for"                    { return 'FOR'; }
-
-
-{decimal}                { return 'DECIMAL'; }
-{entero}                 { return 'ENTERO'; }
-{booleano}               { return 'BOOLEANO'; }
-{CARACTER}               { return 'CAR'; }
-{CADENA}                 { return 'CAD'; }
-{Identificador}          { return 'ID'; }
-
-'.'                      {return 'PUNTO'; }
-':'                      {return 'DOS_PUNTOS'; }
-';'                      {return 'PUNTO_C'; }
-','                      {return 'COMA'; }
-
-// operadores relacionales
-'='                      {return 'IGUAL'; }
-'!='                     {return 'DIFERENCIA'; }
-'<='                     {return 'MENOR_IGUAL'; }
-'>='                     {return 'MAYOR_IGUAL'; }
-'<'                      {return 'MENOR'; }
-'>'                      {return 'MAYOR'; }
-
-'&&'                     {return 'AND'; }
-'||'                     {return 'OR'; }
-'!'                      {return 'NOT'; }
-
-//Operadores Lógicos
-'+'                      {return 'MAS'; }
-'-'                      {return 'MENOS'; }
-'*'                      {return 'POR'; }
-'/'                      {return 'DIVISION'; }
-'('                      {return 'P_ABRE'; }
-')'                      {return 'P_CIERRA'; }
-"["                      {return 'C_Abre'; }
-"]"                      {return 'C_Cierra'; }
-"{"                      { return 'LLAVE_A'; }
-"}"                      { return 'LLAVE_C'; }
-"%"                      { return 'MODULO'; }
-
-
-// -----> FIN DE CADENA Y ERRORES
-<<EOF>>               return 'EOF';
-.  { console.error('Error léxico: \"' + yytext + '\", linea: ' + yylloc.first_line + ', columna: ' + yylloc.first_column);  }
-/lex
-
-
-
-// ################## ANALIZADOR SINTACTICO ######################
-// -------> Precedencia
-
-%{
-
-   const Dato = require("../Interpreter/expresion/Dato.js");
-
-%}
-
-//%left 'MAS' 'MENOS'
-%left  IGUAL, DIFERENCIA, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL
-%left MAS, MENOS
-%left DIVISION, POR
-%left MODULO
-
-// -------> Simbolo Inicial
-%start inicio
-
-
-%% // ------> Gramatica
-
 inicio
-	: instrucciones EOF {$$=$1; return $$;}
+	: instrucciones EOF 
 ;
 
 instrucciones 
-            : instrucciones instruccion {$$ = $1;}
+            : instrucciones instruccion 
 			| instruccion 
-          	| error 	{console.error('Error sintáctico: ' + yytext + ',  linea: ' + this._$.first_line + ', columna: ' + this._$.first_column);}
+          	| error 	
 ;
 
 instruccion
@@ -170,17 +47,17 @@ Variables // Todo tipo de variables
 ; 
 
 Datos
-    : ENTERO { Dato }
+    : ENTERO
 	| DECIMAL
-	| BOOLEANO 
-	| CAR 
-	| CAD 
-	| Vectores_Acceso  // acceso a valores
-	| ID 
+	| BOOLEANO
+	| CAR
+	| CAD
+	| Vectores_Acceso // acceso a valores
+	| ID
 	| Llamadas_Funcs_Methods // Solo podrán ir funciones
 	| Funciones
 	| Natives_Funcs
-	| POW P_ABRE Datos COMA Datos P_CIERRA 
+	| POW P_ABRE Datos COMA Datos P_CIERRA // REVISAR LA POTENCIA
 ;
 
 Valores
