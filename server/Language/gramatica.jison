@@ -105,7 +105,31 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 
 %{
 
-   const Dato = require("../Interpreter/expresion/Dato.js");
+   const Dato = require("../src/Interpreter/Expresion/Dato.js");
+   const Aritmetica = require("../src/Interpreter/Expresion/Aritmetica.js")
+   let { DatosDef,Signos } = require("../src/Interpreter/Expresion/Operaciones.js");
+    
+   function GetDato(Valor, Tipo){
+ 	let dato = new Dato(Valor,Tipo); 
+	return dato.interpretar();
+   }
+
+   function Imprimir(){
+    console.log("-------------------------");
+	console.log("Datos");
+	for (let i = 0; i < DatosDef.length; i++) {
+     console.log(DatosDef[i]);
+    }
+
+    console.log("Signos")
+	for (let i = 0; i < Signos.length; i++) {
+     console.log(Signos[i]);
+    }
+	console.log("-------------------------");
+	DatosDef = [];
+	Signos = [];	
+   }
+   
 
 %}
 
@@ -170,22 +194,32 @@ Variables // Todo tipo de variables
 ; 
 
 Datos
-    : ENTERO { Dato }
-	| DECIMAL
-	| BOOLEANO 
-	| CAR 
-	| CAD 
+    : ENTERO {  $$= GetDato($1, "INT"); }
+	| DECIMAL { $$= GetDato($1, "DOUBLE"); }
+	| BOOLEANO { $$= GetDato($1, "BOOL"); }
+	| CAR { $$= GetDato($1, "CHAR"); }
+	| CAD { $$= GetDato($1, "STRING"); }
 	| Vectores_Acceso  // acceso a valores
 	| ID 
 	| Llamadas_Funcs_Methods // Solo podrán ir funciones
 	| Funciones
 	| Natives_Funcs
-	| POW P_ABRE Datos COMA Datos P_CIERRA 
+	| POW P_ABRE Datos COMA Datos P_CIERRA {
+		let Entorno = {
+        Dato1: $3, // Atributo nombre con valor 'Juan'
+        Dato2: $5,       // Atributo edad con valor 30
+       };
+
+
+		let Operación =  new Aritmetica(Entorno.Dato1.valor,"Pot",Entorno.Dato2.valor);
+		
+		$$ = Operación.interpretar(Entorno);
+	}
 ;
 
 Valores
-        : Datos
-		| Valores Op_Logicos Datos 
+        : Datos { if(typeof $1 === 'object'){ DatosDef.push($1.valor); }else{ DatosDef.push($1); } }
+		| Valores Op_Logicos Datos { Signos.push($2); if(typeof $3 === 'object'){ DatosDef.push($3.valor); }else{ DatosDef.push($3); } }
 ;
 
 Tipos_Valores
@@ -194,7 +228,7 @@ Tipos_Valores
 ;
 
 Modificador
-        : ID
+        : ID { }
 		| Vectores_Acceso // vectores
 ;
 
@@ -389,7 +423,7 @@ Llamadas_Funcs_Methods
 // imprimir
 
 Sen_Cout
-        : COUT MENOR MENOR Valores
+        : COUT MENOR MENOR Valores { Imprimir();}
 		| COUT MENOR MENOR Valores MENOR MENOR ENDL
 ;
 

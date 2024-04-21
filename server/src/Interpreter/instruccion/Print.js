@@ -1,4 +1,4 @@
-const Instruccion = require("../Instruccion.js");
+const Instruccion = require("../instruccion.js");
 
 class Print extends Instruccion{
 

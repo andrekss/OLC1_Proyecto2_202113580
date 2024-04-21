@@ -1,3 +1,4 @@
+const { Suma, Resta, Multiplicación, Division, Potencia, Modulo } = require('./Operaciones');
 const Instruccion = require("../instruccion.js");
 
 class Aritmetica extends Instruccion{  // Terminal
@@ -6,27 +7,24 @@ class Aritmetica extends Instruccion{  // Terminal
         this.expIzq = expIzq;
         this.operador = operador;
         this.expDer = expDer;
-        this.tipo = 'ERROR';
-        this.valor = 'null';
+        this.tipo = 'ERROR'; // tipo de la respuesta
+        this.valor = 'null'; //respuesta
     }
 
-    interpretar(entorno){
-
-        let valorIzq = this.expIzq.interpretar(null);
-        let valorDer = this.expDer.interpretar(null);
+    interpretar(entorno){ // retornamos el resultado
 
         if(this.operador == "+"){
-            return Suma(this.expIzq,this.expDer,this.tipo,this.valor,valorIzq,valorDer);  
+            return Suma(this.expIzq,this.expDer,this.tipo,this,entorno);  
         }else if(this.operador == "-"){
-            return Resta(this.expIzq,this.expDer,this.tipo,this.valor,valorIzq,valorDer);  
+            return Resta(this.expIzq,this.expDer,this.tipo,this,entorno);  
         }else if(this.operador == "*"){
-            return Multiplicación(this.expIzq,this.expDer,this.tipo,this.valor,valorIzq,valorDer);  
-        }else if(this.operador="/"){
-            return Division(this.expIzq,this.expDer,this.tipo,this.valor,valorIzq,valorDer);  
-        }else if (this.operador=="Potencia"){
-            return Potencia(this.expIzq,this.expDer,this.tipo,this.valor,valorIzq,valorDer);  
+            return Multiplicación(this.expIzq,this.expDer,this.tipo,this,entorno);  
+        }else if(this.operador=="/"){
+            return Division(this.expIzq,this.expDer,this.tipo,this,entorno);  
+        }else if (this.operador=="Pot"){
+            return Potencia(this.expIzq,this.expDer,this.tipo,this,entorno);  
         }else if (this.operador=="%"){
-            return Modulo(this.expIzq,this.expDer,this.tipo,this.valor,valorIzq,valorDer);  
+            return Modulo(this.expIzq,this.expDer,this.tipo,this,entorno);  
         }
 
 

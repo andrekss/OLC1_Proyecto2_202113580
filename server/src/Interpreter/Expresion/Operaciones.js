@@ -1,97 +1,102 @@
 // Funciones Aritméticas
-
-function Suma(expIzq, expDer, tipo, valor, valorIzq, valorDer){
-    if(expIzq.tipo == "INT" && expDer.tipo == "INT" || expIzq.tipo == "INT" && expDer.tipo == "BOOL" || expIzq.tipo == "BOOL" && expDer.tipo == "INT" || expIzq.tipo == "INT" && expDer.tipo == "CHAR" || expIzq.tipo == "CHAR" && expDer.tipo == "INT"){
+function Suma(expIzq, expDer, tipo, valor,entorno){
+    if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT"){
         tipo = 'INT';
-        valor = valorIzq + valorDer;
+        valor = expIzq + expDer;
         return Number(valor);
-    }else if(expIzq.tipo == "INT" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "INT" || expIzq.tipo == "DOUBLE" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "BOOL" || expIzq.tipo == "BOOL" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "CHAR" || expIzq.tipo == "CHAR" && expDer.tipo == "DOUBLE"){
+    }else if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE"){
         tipo = 'DOUBLE';
-        valor = valorIzq + valorDer;
+        valor = expIzq + expDer;
         return Number(valor);
-    }else if(expIzq.tipo == "CHAR" && expDer.tipo == "CHAR" || expIzq.tipo == "STRING" && expDer.tipo == "STRING" || expIzq.tipo == "INT" && expDer.tipo == "STRING" || expIzq.tipo == "STRING" && expDer.tipo == "INT" || expIzq.tipo == "DOUBLE" && expDer.tipo == "STRING" || expIzq.tipo == "STRING" && expDer.tipo == "DOUBLE" || expIzq.tipo == "BOOL" && expDer.tipo == "STRING" || expIzq.tipo == "STRING" && expDer.tipo == "BOOL" || expIzq.tipo == "CHAR" && expDer.tipo == "STRING" || expIzq.tipo == "STRING" && expDer.tipo == "CHAR"){
+    }else if(entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "CHAR"){
         tipo = 'STRING';
-        valor = valorIzq + valorDer;
+        valor = expIzq + expDer;
         return valor;
     }else{
         tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return this.valor;
+        return valor;
     }
 
 }
 
-function Resta(expIzq, expDer, tipo, valor, valorIzq, valorDer){
-    if(expIzq.tipo == "INT" && expDer.tipo == "INT" || expIzq.tipo == "INT" && expDer.tipo == "BOOL" || expIzq.tipo == "BOOL" && expDer.tipo == "INT" || expIzq.tipo == "INT" && expDer.tipo == "CHAR" || expIzq.tipo == "CHAR" && expDer.tipo == "INT"){
+function Resta(expIzq, expDer, tipo, valor,entorno){
+    if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT"){
         tipo = 'INT';
-        valor = valorIzq - valorDer;
+        valor = expIzq-expDer;
         return Number(valor);
-    }else if (expIzq.tipo == "DOUBLE" && expDer.tipo == "DOUBLE" || expIzq.tipo == "INT" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "INT" || expIzq.tipo == "BOOL" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "BOOL" || expIzq.tipo == "CHAR" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "CHAR" ){
+    }else if (entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR" ){
         tipo = 'DOUBLE';
-        valor = valorIzq - valorDer;
+        valor = expIzq-expDer;
         return Number(valor);        
     }else{
         tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return this.valor;
+        return valor;
     }
 
 }
 
-function Multiplicación(expIzq, expDer, tipo, valor, valorIzq, valorDer){
-    if(expIzq.tipo == "INT" && expDer.tipo == "INT" || expIzq.tipo == "INT" && expDer.tipo == "CHAR" || expIzq.tipo == "CHAR" && expDer.tipo == "INT" ){
+function Multiplicación(expIzq, expDer, tipo, valor,entorno){
+    if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT" ){
         tipo = 'INT';
-        valor = valorIzq * valorDer;
+        valor = expIzq * expDer;
         return Number(valor);
-    }else if (expIzq.tipo == "DOUBLE" && expDer.tipo == "DOUBLE" || expIzq.tipo == "INT" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "INT" || expIzq.tipo == "CHAR" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "CHAR"  ){
+    }else if (entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR"  ){
         tipo = 'DOUBLE';
-        valor = valorIzq * valorDer;
+        valor = expIzq * expDer;
         return Number(valor);        
     }else{
         tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return this.valor;
+        return valor;
     }
 
 }
 
-function Division(expIzq, expDer, tipo, valor, valorIzq, valorDer){
-    if(expIzq.tipo == "INT" && expDer.tipo == "INT" || expIzq.tipo == "INT" && expDer.tipo == "CHAR" || expIzq.tipo == "CHAR" && expDer.tipo == "INT" || expIzq.tipo == "DOUBLE" && expDer.tipo == "DOUBLE" || expIzq.tipo == "INT" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "INT" || expIzq.tipo == "CHAR" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "CHAR"){
+function Division(expIzq, expDer, tipo, valor,entorno){
+    if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR"){
         tipo = 'DOUBLE';
-        valor = valorIzq / valorDer;
+        valor = expIzq / expDer;
         return Number(valor);
     }else{
         tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return this.valor;
+        return valor;
     }
 
 }
 
-function Potencia(expIzq, expDer, tipo, valor, valorIzq, valorDer){
-    if (expIzq.tipo == "INT" && expDer.tipo == "INT"){
+function Potencia(expIzq, expDer, tipo, valor,entorno){
+    
+    if (entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT"){
         tipo = 'INT';
-        valor = valorIzq ** valorDer;
+        valor = expIzq ** expDer;
         return Number(valor);
-    }else if(expIzq.tipo == "DOUBLE" && expDer.tipo == "DOUBLE" || expIzq.tipo == "INT" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "INT" ){
+    }else if(entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" ){
         tipo = 'DOUBLE';
-        valor = valorIzq ** valorDer;
+        valor = expIzq ** expDer;
         return Number(valor);
     }else{
         tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return this.valor;
+        return valor;
     }
 }
 
-function Modulo(expIzq, expDer, tipo, valor, valorIzq, valorDer){
-    if(expIzq.tipo == "INT" && expDer.tipo == "INT" || expIzq.tipo == "DOUBLE" && expDer.tipo == "DOUBLE" || expIzq.tipo == "INT" && expDer.tipo == "DOUBLE" || expIzq.tipo == "DOUBLE" && expDer.tipo == "INT" ){
+function Modulo(expIzq, expDer, tipo, valor,entorno){
+    if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" ){
         tipo = 'DOUBLE';
-        valor = valorIzq % valorDer;
+        valor = expIzq % expDer;
         return Number(valor);
     }else{
         tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return this.valor;
+        return valor;
     }
 }
+
+
+var DatosDef = [];
+var Signos = [];	
+module.exports = { Suma, Resta, Multiplicación, Division, Potencia, Modulo, DatosDef, Signos };
