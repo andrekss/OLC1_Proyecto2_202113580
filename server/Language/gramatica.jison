@@ -55,13 +55,6 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 "for"                    { return 'FOR'; }
 
 
-{decimal}                { return 'DECIMAL'; }
-{entero}                 { return 'ENTERO'; }
-{booleano}               { return 'BOOLEANO'; }
-{CARACTER}               { return 'CAR'; }
-{CADENA}                 { return 'CAD'; }
-{Identificador}          { return 'ID'; }
-
 '.'                      {return 'PUNTO'; }
 ':'                      {return 'DOS_PUNTOS'; }
 ';'                      {return 'PUNTO_C'; }
@@ -81,7 +74,7 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 
 //Operadores Lógicos
 '+'                      {return 'MAS'; }
-'-'                      {return 'MENOS'; }
+'-'                      { return 'MENOS'; }
 '*'                      {return 'POR'; }
 '/'                      {return 'DIVISION'; }
 '('                      {return 'P_ABRE'; }
@@ -91,6 +84,13 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 "{"                      { return 'LLAVE_A'; }
 "}"                      { return 'LLAVE_C'; }
 "%"                      { return 'MODULO'; }
+
+{decimal}                { return 'DECIMAL'; }
+{entero}                 { return 'ENTERO'; }
+{booleano}               { return 'BOOLEANO'; }
+{CARACTER}               { return 'CAR'; }
+{CADENA}                 { return 'CAD'; }
+{Identificador}          { return 'ID'; }
 
 
 // -----> FIN DE CADENA Y ERRORES
@@ -106,9 +106,21 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 %{
 
    const Dato = require("../src/Interpreter/Expresion/Dato.js");
-   const Aritmetica = require("../src/Interpreter/Expresion/Aritmetica.js")
-   let { DatosDef,Signos } = require("../src/Interpreter/Expresion/Operaciones.js");
-    
+   const Aritmetica = require("../src/Interpreter/Expresion/Aritmetica.js");
+   let { DatosDef,Signos } = require("../src/Interpreter/Expresion/Operaciones.js"); // arreglos para hacer operaciones logicas
+   const Estructuras = require("../src/Interpreter/Structs/Estructura.js");
+   let {Declarar_Linea, structs} = require("../src/Interpreter/Structs/Funciones.js"); // //VariableS Y Vectores
+   let {Ejecutar} =require("../src/Interpreter/Expresion/Ejecución.js");
+   
+   const Print =require("../src/Interpreter/instruccion/Print.js");
+   
+   //VariableS Y Vectores
+   var valores =[];
+   var ids =[];
+
+   //Print
+   
+
    function GetDato(Valor, Tipo){
  	let dato = new Dato(Valor,Tipo); 
 	return dato.interpretar();
@@ -118,7 +130,7 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
     console.log("-------------------------");
 	console.log("Datos");
 	for (let i = 0; i < DatosDef.length; i++) {
-     console.log(DatosDef[i]);
+     console.log(DatosDef[i].valor);
     }
 
     console.log("Signos")
@@ -130,14 +142,36 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 	Signos = [];	
    }
    
+   function Reset(){
+	structs = new Estructuras(); 	
+   }
+
+   function Reset_Structs_Variables(){
+	DatosDef=[]; 
+	Signos =[];
+	valores = [];
+	ids=[];
+   }
+
+
 
 %}
 
 //%left 'MAS' 'MENOS'
+/*
 %left  IGUAL, DIFERENCIA, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL
-%left MAS, MENOS
+%left MAS
+%right MENOS
 %left DIVISION, POR
 %left MODULO
+*/
+
+%left DIVISION, POR, MODULO
+%left MAS, MENOS
+%left IGUAL, DIFERENCIA, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL
+%right NOT
+%left AND
+%left OR
 
 // -------> Simbolo Inicial
 %start inicio
@@ -146,7 +180,7 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 %% // ------> Gramatica
 
 inicio
-	: instrucciones EOF {$$=$1; return $$;}
+	: instrucciones EOF { /*console.log(structs.Variables);*/ Reset(); $$=$1; return $$;}
 ;
 
 instrucciones 
@@ -176,11 +210,11 @@ instruccion
 
 // Variables
 Tipo_Dato
-        : INT
-		| DOUBLE
-		| BOOL
-		| CHAR
-		| STRING
+        : INT { $$=$1; }
+		| DOUBLE { $$=$1; }
+		| BOOL { $$=$1; }
+		| CHAR { $$=$1; }
+		| STRING { $$=$1; }
 ;
 
 Vectores_Acceso // Acceso de valores de un vector vectores
@@ -189,28 +223,26 @@ Vectores_Acceso // Acceso de valores de un vector vectores
 ;
 
 Variables // Todo tipo de variables
-        : Tipo_Dato Dec_Variables
+        : Tipo_Dato Dec_Variables { Declarar_Linea($1, ids, valores, structs); Reset_Structs_Variables();  } 
 		| Dec_Variables // solo aqui van modificadores de vector
 ; 
 
-Datos
+Datos // Retorno de datos
     : ENTERO {  $$= GetDato($1, "INT"); }
 	| DECIMAL { $$= GetDato($1, "DOUBLE"); }
 	| BOOLEANO { $$= GetDato($1, "BOOL"); }
 	| CAR { $$= GetDato($1, "CHAR"); }
 	| CAD { $$= GetDato($1, "STRING"); }
 	| Vectores_Acceso  // acceso a valores
-	| ID 
+	| ID { llamada={ Id:$1, }; $$= GetDato(structs.interpretar(llamada).valor, structs.interpretar(llamada).tipo.toUpperCase()); }// Llamamos la variable
 	| Llamadas_Funcs_Methods // Solo podrán ir funciones
 	| Funciones
 	| Natives_Funcs
 	| POW P_ABRE Datos COMA Datos P_CIERRA {
-		let Entorno = {
-        Dato1: $3, // Atributo nombre con valor 'Juan'
-        Dato2: $5,       // Atributo edad con valor 30
+	   let Entorno = {
+        Dato1: $3, 
+        Dato2: $5,
        };
-
-
 		let Operación =  new Aritmetica(Entorno.Dato1.valor,"Pot",Entorno.Dato2.valor);
 		
 		$$ = Operación.interpretar(Entorno);
@@ -218,38 +250,39 @@ Datos
 ;
 
 Valores
-        : Datos { if(typeof $1 === 'object'){ DatosDef.push($1.valor); }else{ DatosDef.push($1); } }
-		| Valores Op_Logicos Datos { Signos.push($2); if(typeof $3 === 'object'){ DatosDef.push($3.valor); }else{ DatosDef.push($3); } }
+ 		: Datos { DatosDef.push($1); }
+		| Valores Op_Logicos Datos { Signos.push($2); DatosDef.push($3); }
 ;
 
+
 Tipos_Valores
-            : Valores
+            : Valores 
 			| P_ABRE Tipo_Dato P_CIERRA Valores //Casteo
 ;
 
 Modificador
-        : ID { }
+        : ID { $$=$1; }
 		| Vectores_Acceso // vectores
 ;
 
 ID_Formas
-        : Modificador
-		| Modificador IGUAL Tipos_Valores 
+        : Modificador { ids.push($1); valores.push("Default"); }
+		| Modificador IGUAL Tipos_Valores { let valor = Ejecutar(DatosDef,Signos); DatosDef=[]; Signos=[]; ids.push($1); valores.push(valor); }
 ;
 
 Dec_Variables
         : ID_Formas 
-		| ID_Formas COMA Dec_Variables
+		| ID_Formas COMA Dec_Variables 
 ;
 
 // Incremento y Decremento
 Crece_Decrece
-        : MAS MAS
-		| MENOS MENOS
+        : MAS MAS { $$="+";}
+		| MENOS MENOS { $$="-";}
 ;
 
 Incremento_Decremento
-                    : ID Crece_Decrece
+                    : ID Crece_Decrece { structs.Incremento_Decremento($1,$2); }
 ;
 
 // vectores
@@ -423,8 +456,8 @@ Llamadas_Funcs_Methods
 // imprimir
 
 Sen_Cout
-        : COUT MENOR MENOR Valores { Imprimir();}
-		| COUT MENOR MENOR Valores MENOR MENOR ENDL
+        : COUT MENOR MENOR Valores { var Imprimir = new Print(Ejecutar(DatosDef,Signos),"no");  Imprimir.interpretar();  	DatosDef=[]; Signos =[];}
+		| COUT MENOR MENOR Valores MENOR MENOR ENDL { var Imprimir = new Print(Ejecutar(DatosDef,Signos),"si"); Imprimir.interpretar(); DatosDef=[]; Signos =[];}
 ;
 
 // Funciones

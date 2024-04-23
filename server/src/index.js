@@ -17,7 +17,7 @@ app.use(express.text()); // analiza la entrada
 // Ruta para manejar la petición POST
 app.post('/Execute', (req, res) => {
     // Obtener datos del cuerpo de la solicitud
-    const Entrada = req.body;
+    let Entrada = req.body;
 
     //console.log(Entrada)
     Ejecutar.parse(Entrada);

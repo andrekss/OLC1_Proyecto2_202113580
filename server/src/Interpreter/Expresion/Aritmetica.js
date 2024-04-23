@@ -13,20 +13,20 @@ class Aritmetica extends Instruccion{  // Terminal
 
     interpretar(entorno){ // retornamos el resultado
 
+    
         if(this.operador == "+"){
-            return Suma(this.expIzq,this.expDer,this.tipo,this,entorno);  
+            return Suma(this.expIzq,this.expDer,this,entorno);  
         }else if(this.operador == "-"){
-            return Resta(this.expIzq,this.expDer,this.tipo,this,entorno);  
+            return Resta(this.expIzq,this.expDer,this,entorno);  
         }else if(this.operador == "*"){
-            return Multiplicación(this.expIzq,this.expDer,this.tipo,this,entorno);  
+            return Multiplicación(this.expIzq,this.expDer,this,entorno);  
         }else if(this.operador=="/"){
-            return Division(this.expIzq,this.expDer,this.tipo,this,entorno);  
+            return Division(this.expIzq,this.expDer,this,entorno);  
         }else if (this.operador=="Pot"){
-            return Potencia(this.expIzq,this.expDer,this.tipo,this,entorno);  
+            return Potencia(this.expIzq,this.expDer,this,entorno);  
         }else if (this.operador=="%"){
-            return Modulo(this.expIzq,this.expDer,this.tipo,this,entorno);  
+            return Modulo(this.expIzq,this.expDer,this,entorno);  
         }
-
 
     }
 

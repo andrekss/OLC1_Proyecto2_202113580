@@ -1,102 +1,112 @@
 // Funciones Aritméticas
-function Suma(expIzq, expDer, tipo, valor,entorno){
+
+function Suma(expIzq, expDer, object,entorno){
     if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT"){
-        tipo = 'INT';
-        valor = expIzq + expDer;
-        return Number(valor);
+        object.tipo = 'INT'; 
+        object.valor = Number(expIzq + expDer);
+
+       // console.log("Valor "+object.valor)
+       // console.log("Tipo "+object.tipo)
+        
+        return object;
     }else if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE"){
-        tipo = 'DOUBLE';
-        valor = expIzq + expDer;
-        return Number(valor);
+        object.tipo = 'DOUBLE';
+        object.valor = Number(expIzq + expDer);
+        return object;
     }else if(entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "STRING" || entorno.Dato1.tipo == "STRING" && entorno.Dato2.tipo == "CHAR"){
-        tipo = 'STRING';
-        valor = expIzq + expDer;
-        return valor;
+        object.tipo = 'STRING';
+        object.valor = expIzq + expDer;
+        return object;
     }else{
-        tipo = "ERROR";
+        object.tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return valor;
+        return object;
     }
 
 }
 
-function Resta(expIzq, expDer, tipo, valor,entorno){
+function Resta(expIzq, expDer, object,entorno){
     if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT"){
-        tipo = 'INT';
-        valor = expIzq-expDer;
-        return Number(valor);
+        object.tipo = 'INT';
+        object.valor = Number(expIzq-expDer);
+        return object;
     }else if (entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR" ){
-        tipo = 'DOUBLE';
-        valor = expIzq-expDer;
-        return Number(valor);        
+        object.tipo = 'DOUBLE';
+        object.valor = Number(expIzq-expDer);
+        return object;       
     }else{
-        tipo = "ERROR";
+        object.tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return valor;
+        return object;
     }
 
 }
 
-function Multiplicación(expIzq, expDer, tipo, valor,entorno){
+function Multiplicación(expIzq, expDer, object,entorno){
     if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT" ){
-        tipo = 'INT';
-        valor = expIzq * expDer;
-        return Number(valor);
+        object.tipo = 'INT';
+        object.valor = Number(expIzq * expDer);
+        return object;
     }else if (entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR"  ){
-        tipo = 'DOUBLE';
-        valor = expIzq * expDer;
-        return Number(valor);        
+        object.tipo = 'DOUBLE';
+        object.valor = Number(expIzq * expDer);
+        return object;       
     }else{
-        tipo = "ERROR";
+        object.tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return valor;
+        return object;
     }
 
 }
 
-function Division(expIzq, expDer, tipo, valor,entorno){
+function Division(expIzq, expDer, object,entorno){
     if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR"){
-        tipo = 'DOUBLE';
-        valor = expIzq / expDer;
-        return Number(valor);
+        object.tipo = 'DOUBLE';
+        object.valor = Number(expIzq / expDer);
+        if (object.valor = Number("Infinity")){
+            object.valor="ERROR";
+            console.log("Error Semántico: No existe la división entre 0");
+            return object;
+        }
+        return object;
     }else{
-        tipo = "ERROR";
+        object.tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return valor;
+        return object;
     }
 
 }
 
-function Potencia(expIzq, expDer, tipo, valor,entorno){
+function Potencia(expIzq, expDer, object,entorno){
     
     if (entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT"){
-        tipo = 'INT';
-        valor = expIzq ** expDer;
-        return Number(valor);
+        object.tipo = 'INT'; 
+        object.valor = expIzq ** expDer; 
+        return object;
     }else if(entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" ){
-        tipo = 'DOUBLE';
-        valor = expIzq ** expDer;
-        return Number(valor);
-    }else{
-        tipo = "ERROR";
+        object.tipo = 'DOUBLE';
+        object.valor = expIzq ** expDer;
+        return object;
+    }else{ 
+        object.tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return valor;
+        return object;
     }
 }
 
-function Modulo(expIzq, expDer, tipo, valor,entorno){
+function Modulo(expIzq, expDer, object,entorno){
     if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" ){
-        tipo = 'DOUBLE';
-        valor = expIzq % expDer;
-        return Number(valor);
+        object.tipo = 'DOUBLE';
+        object.valor = Number(expIzq % expDer);
+        return object;
     }else{
-        tipo = "ERROR";
+        object.tipo = "ERROR";
         console.log("Error Semántico: Error de tipo de dato");
-        return valor;
+        return object;
     }
 }
-
-
 var DatosDef = [];
-var Signos = [];	
-module.exports = { Suma, Resta, Multiplicación, Division, Potencia, Modulo, DatosDef, Signos };
+var Signos = [];
+ 
+
+module.exports = { Suma, Resta, Multiplicación, Division, Potencia, Modulo, DatosDef, Signos}; 
