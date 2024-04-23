@@ -109,8 +109,9 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
    const Aritmetica = require("../src/Interpreter/Expresion/Aritmetica.js");
    let { DatosDef,Signos } = require("../src/Interpreter/Expresion/Operaciones.js"); // arreglos para hacer operaciones logicas
    const Estructuras = require("../src/Interpreter/Structs/Estructura.js");
-   let {Declarar_Linea, structs} = require("../src/Interpreter/Structs/Funciones.js"); // //VariableS Y Vectores
+   let {Declarar_Linea, structs,Default_Values} = require("../src/Interpreter/Structs/Funciones.js"); // //VariableS Y Vectores
    let {Ejecutar} =require("../src/Interpreter/Expresion/Ejecución.js");
+   let Vector =require("../src/Interpreter/Structs/Vector.js");
    
    const Print =require("../src/Interpreter/instruccion/Print.js");
    
@@ -152,6 +153,12 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 	valores = [];
 	ids=[];
    }
+
+   parser.parseError = function (message, hash) {
+    // Tu código para ejecutar al final de la cadena
+    console.log("Se ha alcanzado el final de la cadena.");
+};
+
 
 
 
@@ -218,7 +225,7 @@ Tipo_Dato
 ;
 
 Vectores_Acceso // Acceso de valores de un vector vectores
-            : ID C_Abre Valores C_Cierra 
+            : ID C_Abre Valores C_Cierra // 1 dimensión
 			| ID C_Abre Valores C_Cierra C_Abre Valores C_Cierra 
 ;
 
@@ -234,7 +241,7 @@ Datos // Retorno de datos
 	| CAR { $$= GetDato($1, "CHAR"); }
 	| CAD { $$= GetDato($1, "STRING"); }
 	| Vectores_Acceso  // acceso a valores
-	| ID { llamada={ Id:$1, }; $$= GetDato(structs.interpretar(llamada).valor, structs.interpretar(llamada).tipo.toUpperCase()); }// Llamamos la variable
+	| ID { llamada={ Id:$1, Modo:"Vars", }; $$= GetDato(structs.interpretar(llamada).valor, structs.interpretar(llamada).tipo.toUpperCase()); }// Llamamos la variable
 	| Llamadas_Funcs_Methods // Solo podrán ir funciones
 	| Funciones
 	| Natives_Funcs
@@ -249,7 +256,7 @@ Datos // Retorno de datos
 	}
 ;
 
-Valores
+Valores 
  		: Datos { DatosDef.push($1); }
 		| Valores Op_Logicos Datos { Signos.push($2); DatosDef.push($3); }
 ;
@@ -275,6 +282,8 @@ Dec_Variables
 		| ID_Formas COMA Dec_Variables 
 ;
 
+
+
 // Incremento y Decremento
 Crece_Decrece
         : MAS MAS { $$="+";}
@@ -284,6 +293,8 @@ Crece_Decrece
 Incremento_Decremento
                     : ID Crece_Decrece { structs.Incremento_Decremento($1,$2); }
 ;
+
+
 
 // vectores
 
@@ -304,6 +315,13 @@ Valores_Corchete_Separado
 
 Declaracion_1 // declarar el vector
             : Tipo_Dato ID C_Abre C_Cierra IGUAL NEW Tipo_Dato C_Abre Valores C_Cierra // 1 dimensión
+			{   
+				let x = Number(Ejecutar(DatosDef,Signos).valor); DatosDef = []; Signos =[];
+				let vector = new Array(x).fill(Default_Values("Default",$1).valor);
+				var Objvector = new Vector($1,vector); 
+			    structs.pushVector($2,Objvector,$1); 
+				console.log(structs.Vectores);	
+			} 
 			| Tipo_Dato ID C_Abre C_Cierra C_Abre C_Cierra IGUAL NEW Tipo_Dato C_Abre Valores C_Cierra C_Abre Valores C_Cierra // 2 dimensiones
 ;
 
@@ -321,6 +339,8 @@ Declaracion_2 // declarar y asignar valores al vector
             : Tipo_Dato ID C_Abre C_Cierra IGUAL Asignaciones_Vectores // 1 dimensión
 			| Tipo_Dato ID C_Abre C_Cierra C_Abre C_Cierra IGUAL Asignaciones_Vectores_Mas // 2 dimensiones
 ;
+
+
 // Condiciones
 
 Op_Logicos

@@ -37,4 +37,4 @@ function GetDato(Valor, Tipo){
 
 var structs = new Estructuras(); // variables y vectores
 
-module.exports = {Declarar_Linea, structs};
+module.exports = {Declarar_Linea, structs, Default_Values};

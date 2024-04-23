@@ -4,7 +4,7 @@ class Estructuras extends Instruccion {
     constructor(){
         super();
         this.Variables = {};
-        this.Vectores= [];
+        this.Vectores= {};
     }
 
     pushVariable(ID, object, tipo) {
@@ -29,6 +29,28 @@ class Estructuras extends Instruccion {
         }
     } 
 
+    pushVector(ID, object, tipo) {
+        //console.log(this.Variables);
+        if (tipo == "std::string".toLowerCase()){
+            tipo = "string";
+        }
+        try {
+         if (this.Vectores.hasOwnProperty(ID)) {
+             //throw new Error(`Error semántico: La variable"${ID}" ya existe.`);
+             console.log("Error semántico: La variable "+ID+" ya existe.");
+         } 
+         
+         else if(this.Vectores[ID].tipo.toLowerCase() != tipo.toLowerCase()){
+             console.log("Error semántico: El dato asignado no coincide con el tipo de dato de la variable.");
+         }
+         else {
+             this.Vectores[ID] = object;
+         }
+        } catch{
+            this.Vectores[ID] = object;
+        }
+    } 
+
     Incremento_Decremento(Id,Indicar){
        
         if(Indicar=="+" && this.Variables[Id].tipo.toUpperCase() =="INT"){
@@ -42,7 +64,11 @@ class Estructuras extends Instruccion {
 
 
     interpretar(entorno){ // Retorno objeto
-        return this.Variables[entorno.Id];
+        if (entorno.Modo="Vars"){
+         return this.Variables[entorno.Id];
+        } else{
+         return this.Vectores[entorno.Id];
+        }
     }
 }
 

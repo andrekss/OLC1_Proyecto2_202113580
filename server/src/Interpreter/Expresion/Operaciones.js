@@ -107,6 +107,6 @@ function Modulo(expIzq, expDer, object,entorno){
 }
 var DatosDef = [];
 var Signos = [];
- 
+
 
 module.exports = { Suma, Resta, Multiplicación, Division, Potencia, Modulo, DatosDef, Signos}; 

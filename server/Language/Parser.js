@@ -114,7 +114,7 @@ case 31:
  this.$= GetDato($$[$0], "STRING"); 
 break;
 case 33:
- llamada={ Id:$$[$0], }; this.$= GetDato(structs.interpretar(llamada).valor, structs.interpretar(llamada).tipo.toUpperCase()); 
+ llamada={ Id:$$[$0], Modo:"Vars", }; this.$= GetDato(structs.interpretar(llamada).valor, structs.interpretar(llamada).tipo.toUpperCase()); 
 break;
 case 37:
 
@@ -147,6 +147,15 @@ case 49:
 break;
 case 50:
  structs.Incremento_Decremento($$[$0-1],$$[$0]); 
+break;
+case 57:
+   
+				let x = Number(Ejecutar(DatosDef,Signos).valor); DatosDef = []; Signos =[];
+				let vector = new Array(x).fill(Default_Values("Default",$$[$0-9]).valor);
+				var Objvector = new Vector($$[$0-9],vector); 
+			    structs.pushVector($$[$0-8],Objvector,$$[$0-9]); 
+				console.log(structs.Vectores);	
+			
 break;
 case 120:
  var Imprimir = new Print(Ejecutar(DatosDef,Signos),"no");  Imprimir.interpretar();  	DatosDef=[]; Signos =[];
@@ -411,8 +420,9 @@ _handle_error:
    const Aritmetica = require("../src/Interpreter/Expresion/Aritmetica.js");
    let { DatosDef,Signos } = require("../src/Interpreter/Expresion/Operaciones.js"); // arreglos para hacer operaciones logicas
    const Estructuras = require("../src/Interpreter/Structs/Estructura.js");
-   let {Declarar_Linea, structs} = require("../src/Interpreter/Structs/Funciones.js"); // //VariableS Y Vectores
+   let {Declarar_Linea, structs,Default_Values} = require("../src/Interpreter/Structs/Funciones.js"); // //VariableS Y Vectores
    let {Ejecutar} =require("../src/Interpreter/Expresion/Ejecución.js");
+   let Vector =require("../src/Interpreter/Structs/Vector.js");
    
    const Print =require("../src/Interpreter/instruccion/Print.js");
    
@@ -454,6 +464,12 @@ _handle_error:
 	valores = [];
 	ids=[];
    }
+
+   parser.parseError = function (message, hash) {
+    // Tu código para ejecutar al final de la cadena
+    console.log("Se ha alcanzado el final de la cadena.");
+};
+
 
 
 
