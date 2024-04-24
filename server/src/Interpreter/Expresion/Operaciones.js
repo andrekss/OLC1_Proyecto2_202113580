@@ -4,10 +4,8 @@ function Suma(expIzq, expDer, object,entorno){
     if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "INT"){
         object.tipo = 'INT'; 
         object.valor = Number(expIzq + expDer);
-
        // console.log("Valor "+object.valor)
        // console.log("Tipo "+object.tipo)
-        
         return object;
     }else if(entorno.Dato1.tipo == "INT" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "INT" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "BOOL" || entorno.Dato1.tipo == "BOOL" && entorno.Dato2.tipo == "DOUBLE" || entorno.Dato1.tipo == "DOUBLE" && entorno.Dato2.tipo == "CHAR" || entorno.Dato1.tipo == "CHAR" && entorno.Dato2.tipo == "DOUBLE"){
         object.tipo = 'DOUBLE';

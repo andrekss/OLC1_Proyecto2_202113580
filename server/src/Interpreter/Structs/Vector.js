@@ -8,7 +8,7 @@ class Vectores extends Instruccion {
     }
 
     interpretar(entorno){ //retornos
-
+        return this.valor
     }
 }
 

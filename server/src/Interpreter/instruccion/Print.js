@@ -13,6 +13,7 @@ class Print extends Instruccion{
             console.log("Error Semántico: No se puede hacer print de errores")
             return;
         }
+        
         if (this.Salto=="si"){
          console.log(this.expresion.valor);
         }else{

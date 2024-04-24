@@ -3,12 +3,13 @@ const Estructuras = require("./Estructura.js");
 
 function Declarar_Linea(TipoDato, id, valor, structs){ // id(strings) y valores(cualquier dato de cualquier tipo, pero es object) son arreglos
     for (let i = 0; i < id.length; i++) {
-        structs.pushVariable(id[i],Default_Values(valor[i],TipoDato),TipoDato); 
+        structs.push(id[i],Default_Values(valor[i],TipoDato),TipoDato); 
     }
     
 }
 
 function Default_Values(valor,TipoDato){ // retornar bien los datos
+
     if (valor == "Default"){
         switch(TipoDato.toLowerCase()){
             case "int":
@@ -20,7 +21,7 @@ function Default_Values(valor,TipoDato){ // retornar bien los datos
             case "char":
                 return GetDato('\u0000', TipoDato.toUpperCase());
             case "std::string":
-                return GetDato("", TipoDato.toUpperCase());
+                return GetDato("", "STRING");
         }
 
     } else{

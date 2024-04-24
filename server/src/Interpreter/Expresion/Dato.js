@@ -1,10 +1,12 @@
 const Instruccion = require("../instruccion.js");
 
 class Dato extends Instruccion{ // No terminal
-    constructor(valor, tipo){
+    constructor(valor, tipo, Linea, Columna){
         super();
         this.tipo = tipo;
         this.valor = valor;
+        this.Linea = Linea;
+        this.Columna = Columna;
     }
 
     EliminarComillas(cadena, eliminar){

@@ -3,7 +3,7 @@
 %options case-insensitive 
 
 // ---------> Expresiones Regulares
-entero  [0-9]+|'-'[0-9]+;
+entero  [0-9]+;
 decimal   {entero}'.'[0-9]+;
 booleano      "true"|"false";
 CADENA     "\""[^"\""]*"\"";
@@ -61,6 +61,7 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 ','                      {return 'COMA'; }
 
 // operadores relacionales
+'=='                     {return 'COMPARACION'; }
 '='                      {return 'IGUAL'; }
 '!='                     {return 'DIFERENCIA'; }
 '<='                     {return 'MENOR_IGUAL'; }
@@ -75,6 +76,7 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 //Operadores Lógicos
 '+'                      {return 'MAS'; }
 '-'                      { return 'MENOS'; }
+'-'                      { return 'NMENOS'; }
 '*'                      {return 'POR'; }
 '/'                      {return 'DIVISION'; }
 '('                      {return 'P_ABRE'; }
@@ -107,24 +109,49 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 
    const Dato = require("../src/Interpreter/Expresion/Dato.js");
    const Aritmetica = require("../src/Interpreter/Expresion/Aritmetica.js");
-   let { DatosDef,Signos } = require("../src/Interpreter/Expresion/Operaciones.js"); // arreglos para hacer operaciones logicas
    const Estructuras = require("../src/Interpreter/Structs/Estructura.js");
    let {Declarar_Linea, structs,Default_Values} = require("../src/Interpreter/Structs/Funciones.js"); // //VariableS Y Vectores
-   let {Ejecutar} =require("../src/Interpreter/Expresion/Ejecución.js");
+   let Negativo =require("../src/Interpreter/Expresion/Negativo.js");
    let Vector =require("../src/Interpreter/Structs/Vector.js");
-   
    const Print =require("../src/Interpreter/instruccion/Print.js");
+  
+   const Condicion =require("../src/Interpreter/instruccion/Condiciones.js");
+   const Negacion =require("../src/Interpreter/instruccion/Negación.js");
    
    //VariableS Y Vectores
    var valores =[];
    var ids =[];
+   var Matriz=[];
 
    //Print
    
 
-   function GetDato(Valor, Tipo){
- 	let dato = new Dato(Valor,Tipo); 
+   function GetDato(Valor, Tipo, linea,columna){
+ 	let dato = new Dato(Valor,Tipo,linea,columna); 
 	return dato.interpretar();
+   }
+
+   function GetAritmetica(izq, op, der, linea, columna){
+	let entorno = { Dato1:izq, Dato2:der, }; 
+	let operation= new Aritmetica(izq.valor, op, der.valor, linea, columna);
+
+	return operation.interpretar(entorno);
+   }
+
+   function GetCondición(expIzq, operador, expDer,Linea,Columna){
+	let Operado =new Condicion(expIzq, operador, expDer,Linea,Columna);
+	return Operado.interpretar();
+   }
+
+   function Negar(expresion,fila,columna){
+	let niega =  new Negacion(expresion,fila,columna);
+	return niega.interpretar();
+   }
+
+   function GetNegación(valor,linea,columna){
+	let negar = new Negativo(valor,linea,columna);
+	return negar.interpretar();
+
    }
 
    function Imprimir(){
@@ -147,20 +174,10 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 	structs = new Estructuras(); 	
    }
 
-   function Reset_Structs_Variables(){
-	DatosDef=[]; 
-	Signos =[];
+   function Reset_Structs(){
 	valores = [];
 	ids=[];
    }
-
-   parser.parseError = function (message, hash) {
-    // Tu código para ejecutar al final de la cadena
-    console.log("Se ha alcanzado el final de la cadena.");
-};
-
-
-
 
 %}
 
@@ -173,12 +190,18 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 %left MODULO
 */
 
-%left DIVISION, POR, MODULO
+
 %left MAS, MENOS
-%left IGUAL, DIFERENCIA, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL
+%left COMPARACION, DIFERENCIA, MENOR, MENOR_IGUAL, MAYOR, MAYOR_IGUAL
 %right NOT
 %left AND
 %left OR
+%left DIVISION, POR, MODULO
+%nonassoc POW
+%right NMENOS
+
+
+
 
 // -------> Simbolo Inicial
 %start inicio
@@ -187,7 +210,7 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 %% // ------> Gramatica
 
 inicio
-	: instrucciones EOF { /*console.log(structs.Variables);*/ Reset(); $$=$1; return $$;}
+	: instrucciones EOF { /*console.log(structs.Identificadores );*/  Reset(); $$=$1; return $$;}
 ;
 
 instrucciones 
@@ -230,40 +253,33 @@ Vectores_Acceso // Acceso de valores de un vector vectores
 ;
 
 Variables // Todo tipo de variables
-        : Tipo_Dato Dec_Variables { Declarar_Linea($1, ids, valores, structs); Reset_Structs_Variables();  } 
+        : Tipo_Dato Dec_Variables { Declarar_Linea($1, ids, valores, structs); Reset_Structs();  } 
 		| Dec_Variables // solo aqui van modificadores de vector
 ; 
 
-Datos // Retorno de datos
-    : ENTERO {  $$= GetDato($1, "INT"); }
-	| DECIMAL { $$= GetDato($1, "DOUBLE"); }
-	| BOOLEANO { $$= GetDato($1, "BOOL"); }
-	| CAR { $$= GetDato($1, "CHAR"); }
-	| CAD { $$= GetDato($1, "STRING"); }
+Valores // retorna objeto con tipo y valor
+	: MENOS Valores %prec NMENOS                 { $$ = GetNegación($2, @1.first_line, @1.first_column); }
+	| POW P_ABRE Valores COMA Valores P_CIERRA   { $$ = GetAritmetica($3, $1, $5, @1.first_line, @1.first_column); }
+	| Valores POR Valores                        { $$ = GetAritmetica($1, $2, $3, @1.first_line, @1.first_column); }
+	| Valores DIVISION Valores                   { $$ = GetAritmetica($1, $2, $3, @1.first_line, @1.first_column); }
+	| Valores MODULO Valores                     { $$ = GetAritmetica($1, $2, $3, @1.first_line, @1.first_column); }
+	| Valores MAS Valores                        { $$ = GetAritmetica($1, $2, $3, @1.first_line, @1.first_column); }
+	| Valores MENOS Valores                      { $$ = GetAritmetica($1, $2, $3, @1.first_line, @1.first_column); }
+	| P_ABRE Valores P_CIERRA                    { $$ = $2; }                                    
+    | ENTERO                                     { $$ = GetDato($1, "INT", @1.first_line, @1.first_column); }
+	| DECIMAL                                    { $$ = GetDato($1, "DOUBLE", @1.first_line, @1.first_column); }
+	| BOOLEANO                                   { $$ = GetDato($1, "BOOL", @1.first_line, @1.first_column); }
+	| CAR                                        { $$ = GetDato($1, "CHAR", @1.first_line, @1.first_column); }
+	| CAD                                        { $$ = GetDato($1, "STRING", @1.first_line, @1.first_column); }
 	| Vectores_Acceso  // acceso a valores
-	| ID { llamada={ Id:$1, Modo:"Vars", }; $$= GetDato(structs.interpretar(llamada).valor, structs.interpretar(llamada).tipo.toUpperCase()); }// Llamamos la variable
+	| ID                                         { llamada={ Id:$1, Modo:"Vars", }; $$= GetDato(structs.interpretar(llamada).valor , structs.interpretar(llamada).tipo.toUpperCase()); }// Llamamos la variable
 	| Llamadas_Funcs_Methods // Solo podrán ir funciones
 	| Funciones
-	| Natives_Funcs
-	| POW P_ABRE Datos COMA Datos P_CIERRA {
-	   let Entorno = {
-        Dato1: $3, 
-        Dato2: $5,
-       };
-		let Operación =  new Aritmetica(Entorno.Dato1.valor,"Pot",Entorno.Dato2.valor);
-		
-		$$ = Operación.interpretar(Entorno);
-	}
+	| Natives_Funcs 
 ;
-
-Valores 
- 		: Datos { DatosDef.push($1); }
-		| Valores Op_Logicos Datos { Signos.push($2); DatosDef.push($3); }
-;
-
 
 Tipos_Valores
-            : Valores 
+            : Valores {$$=$1;}
 			| P_ABRE Tipo_Dato P_CIERRA Valores //Casteo
 ;
 
@@ -274,7 +290,7 @@ Modificador
 
 ID_Formas
         : Modificador { ids.push($1); valores.push("Default"); }
-		| Modificador IGUAL Tipos_Valores { let valor = Ejecutar(DatosDef,Signos); DatosDef=[]; Signos=[]; ids.push($1); valores.push(valor); }
+		| Modificador IGUAL Tipos_Valores { ids.push($1); valores.push($3); }
 ;
 
 Dec_Variables
@@ -296,33 +312,37 @@ Incremento_Decremento
 
 
 
+
 // vectores
 
-Vectores
+Vectores 
     : Declaracion_1
 	| Declaracion_2
 ;
 
 Valores_Separado
-            : Valores
-			| Valores_Separado COMA Valores
+            : Valores { valores.push($1.valor); }
+			| Valores_Separado COMA Valores {  valores.push($3.valor); }
 ;
 
 Valores_Corchete_Separado
-                    : C_Abre Valores_Separado C_Cierra
-					| Valores_Corchete_Separado COMA C_Abre Valores_Separado C_Cierra
+                    : C_Abre Valores_Separado C_Cierra { Matriz.push(valores); Reset_Structs(); }
+					| Valores_Corchete_Separado COMA C_Abre Valores_Separado C_Cierra { Matriz.push(valores); Reset_Structs();}
 ;
 
 Declaracion_1 // declarar el vector
             : Tipo_Dato ID C_Abre C_Cierra IGUAL NEW Tipo_Dato C_Abre Valores C_Cierra // 1 dimensión
-			{   
-				let x = Number(Ejecutar(DatosDef,Signos).valor); DatosDef = []; Signos =[];
-				let vector = new Array(x).fill(Default_Values("Default",$1).valor);
+			{ 
+				let vector = new Array(Number($9.valor)).fill(Default_Values("Default",$1).valor);
 				var Objvector = new Vector($1,vector); 
-			    structs.pushVector($2,Objvector,$1); 
-				console.log(structs.Vectores);	
+			    structs.push($2,Objvector,$1); 
 			} 
 			| Tipo_Dato ID C_Abre C_Cierra C_Abre C_Cierra IGUAL NEW Tipo_Dato C_Abre Valores C_Cierra C_Abre Valores C_Cierra // 2 dimensiones
+			{   
+				let matriz = new Array(Number($11.valor)).fill(Default_Values("Default",$1).valor).map(() => new Array(Number($14.valor)).fill(Default_Values("Default",$1).valor));
+				var ObjMatriz = new Vector($1,matriz); 
+			    structs.push($2,ObjMatriz,$1); 
+			} 
 ;
 
 Asignaciones_Vectores
@@ -336,38 +356,28 @@ Asignaciones_Vectores_Mas
 ;
 
 Declaracion_2 // declarar y asignar valores al vector
-            : Tipo_Dato ID C_Abre C_Cierra IGUAL Asignaciones_Vectores // 1 dimensión
-			| Tipo_Dato ID C_Abre C_Cierra C_Abre C_Cierra IGUAL Asignaciones_Vectores_Mas // 2 dimensiones
+            : Tipo_Dato ID C_Abre C_Cierra IGUAL Asignaciones_Vectores { var Objvector = new Vector($1,valores); structs.push($2,Objvector,$1);  Reset_Structs(); /*console.log(structs.Identificadores["vector4"].valor[0] );*/ } // 1 dimensión
+			| Tipo_Dato ID C_Abre C_Cierra C_Abre C_Cierra IGUAL Asignaciones_Vectores_Mas 
+			{ var ObjMatriz = new Vector($1,Matriz); structs.push($2,ObjMatriz,$1); Matriz=[];  /*console.log(structs.Identificadores["vector"].valor[1][0] );*/ } // 2 dimensiones
 ;
+
 
 
 // Condiciones
 
-Op_Logicos
-        : MAS
-		| MENOS
-		| POR
-		| DIVISION
-		| MODULO
-;
-
-
-Op_Racionales 
-            : IGUAL IGUAL
-            | DIFERENCIA
-			| MENOR_IGUAL
-			| MAYOR_IGUAL
-			| MENOR
-			| MAYOR
-			| AND
-			| OR
-			| NOT
-;
-
 Condicion
-            : Valores
-			| Valores Op_Racionales Condicion
+        : NOT Condicion                      { $$ = Negar($2,@1.first_line, @1.first_column)}
+        | Condicion COMPARACION Condicion    { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+        | Condicion DIFERENCIA Condicion     { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+        | Condicion MENOR_IGUAL Condicion    { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+        | Condicion MAYOR_IGUAL Condicion    { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+        | Condicion MENOR Condicion          { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+        | Condicion MAYOR Condicion          { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+        | Condicion AND Condicion            { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+        | Condicion OR Condicion             { $$ = GetCondición($1,$2,$3,@1.first_line, @1.first_column);}
+		| Valores                            { $$ = $1.valor; }  
 ;
+
 
 // Sentencias de control
 
@@ -390,7 +400,7 @@ Bloque_Else_If
 ;
 
 If_Simple
-        : IF P_ABRE Condicion P_CIERRA LLAVE_A instrucciones LLAVE_C
+        : IF P_ABRE Condicion P_CIERRA LLAVE_A instrucciones LLAVE_C { }
 ;
 
 Sen_IF
@@ -476,8 +486,8 @@ Llamadas_Funcs_Methods
 // imprimir
 
 Sen_Cout
-        : COUT MENOR MENOR Valores { var Imprimir = new Print(Ejecutar(DatosDef,Signos),"no");  Imprimir.interpretar();  	DatosDef=[]; Signos =[];}
-		| COUT MENOR MENOR Valores MENOR MENOR ENDL { var Imprimir = new Print(Ejecutar(DatosDef,Signos),"si"); Imprimir.interpretar(); DatosDef=[]; Signos =[];}
+        : COUT MENOR MENOR Valores { var Imprimir = new Print($4,"no");  Imprimir.interpretar();  	}
+		| COUT MENOR MENOR Valores MENOR MENOR ENDL { var Imprimir = new Print($4,"si"); Imprimir.interpretar(); }
 ;
 
 // Funciones
@@ -492,8 +502,8 @@ Funciones
 
 Natives_Funcs
             : ID PUNTO LENGTH P_ABRE P_CIERRA // el id puede ser una cadena, lista o vector
-			| TYPEOF P_ABRE Valores P_CIERRA
-			| TOSTRING P_ABRE Valores P_CIERRA
+			| TYPEOF P_ABRE Valores P_CIERRA { $$= GetDato($3.valor, $3.tipo.toUpperCase()); }
+			| TOSTRING P_ABRE Valores P_CIERRA 
 			| ID PUNTO C_STR P_ABRE P_CIERRA
 ;
 

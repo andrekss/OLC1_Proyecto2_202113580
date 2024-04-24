@@ -3,60 +3,37 @@ const Instruccion = require("../instruccion.js");
 class Estructuras extends Instruccion {
     constructor(){
         super();
-        this.Variables = {};
-        this.Vectores= {};
+        this.Identificadores = {};
     }
 
-    pushVariable(ID, object, tipo) {
-        //console.log(this.Variables);
+    push(ID, object, tipo) {
+        //console.log(this.Identificadores);
         if (tipo == "std::string".toLowerCase()){
             tipo = "string";
         }
         try {
-         if (this.Variables.hasOwnProperty(ID)) {
+         if (this.Identificadores.hasOwnProperty(ID)) {
              //throw new Error(`Error semántico: La variable"${ID}" ya existe.`);
              console.log("Error semántico: La variable "+ID+" ya existe.");
          } 
          
-         else if(this.Variables[ID].tipo.toLowerCase() != tipo.toLowerCase()){
+         else if(this.Identificadores[ID].tipo.toLowerCase() != tipo.toLowerCase()){
              console.log("Error semántico: El dato asignado no coincide con el tipo de dato de la variable.");
          }
          else {
-             this.Variables[ID] = object;
+             this.Identificadores[ID] = object;
          }
         } catch{
-            this.Variables[ID] = object;
+            this.Identificadores[ID] = object;
         }
-    } 
+    }  
 
-    pushVector(ID, object, tipo) {
-        //console.log(this.Variables);
-        if (tipo == "std::string".toLowerCase()){
-            tipo = "string";
-        }
-        try {
-         if (this.Vectores.hasOwnProperty(ID)) {
-             //throw new Error(`Error semántico: La variable"${ID}" ya existe.`);
-             console.log("Error semántico: La variable "+ID+" ya existe.");
-         } 
-         
-         else if(this.Vectores[ID].tipo.toLowerCase() != tipo.toLowerCase()){
-             console.log("Error semántico: El dato asignado no coincide con el tipo de dato de la variable.");
-         }
-         else {
-             this.Vectores[ID] = object;
-         }
-        } catch{
-            this.Vectores[ID] = object;
-        }
-    } 
-
-    Incremento_Decremento(Id,Indicar){
+    Incremento_Decremento(Id,Indicar){ // Falta la parte de vectores
        
-        if(Indicar=="+" && this.Variables[Id].tipo.toUpperCase() =="INT"){
-            this.Variables[Id].valor+=1;
-        }else if($2=="-" && this.Variables[Id].tipo.toUpperCase() =="INT"){
-            this.Variables[Id].valor-=1;
+        if(Indicar=="+" && this.Identificadores[Id].tipo.toUpperCase() =="INT"){
+            this.Identificadores[Id].valor+=1;
+        }else if($2=="-" && this.Identificadores[Id].tipo.toUpperCase() =="INT"){
+            this.Identificadores[Id].valor-=1;
         } else {
             console.log("Error semántico: la variable no es de tipo int")
         }
@@ -64,11 +41,7 @@ class Estructuras extends Instruccion {
 
 
     interpretar(entorno){ // Retorno objeto
-        if (entorno.Modo="Vars"){
-         return this.Variables[entorno.Id];
-        } else{
-         return this.Vectores[entorno.Id];
-        }
+         return this.Identificadores[entorno.Id];
     }
 }
 
