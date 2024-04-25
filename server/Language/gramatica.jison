@@ -114,6 +114,9 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
    let Negativo =require("../src/Interpreter/Expresion/Negativo.js");
    let Vector =require("../src/Interpreter/Structs/Vector.js");
    const Print =require("../src/Interpreter/instruccion/Print.js");
+   const IF =require("../src/Interpreter/Sentencias_Control/IF.js");
+
+   //const If =require("../src/Interpreter/Sentencias_Control/IF.js");
   
    const Condicion =require("../src/Interpreter/instruccion/Condiciones.js");
    const Negacion =require("../src/Interpreter/instruccion/Negación.js");
@@ -122,6 +125,7 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
    var valores =[];
    var ids =[];
    var Matriz=[];
+   var type ="";  // tipo de dato de vectores
 
    //Print
    
@@ -210,32 +214,33 @@ Identificador [a-zA-Z][a-zA-Z0-9\_]*;
 %% // ------> Gramatica
 
 inicio
-	: instrucciones EOF { /*console.log(structs.Identificadores );*/  Reset(); $$=$1; return $$;}
+	: instrucciones EOF {  /*console.log(structs.Identificadores );*/ /*console.log(typeof $1);*/ Reset(); $$ = $1; return $$;}
+	| EOF {return [];}
 ;
 
 instrucciones 
-            : instrucciones instruccion {$$ = $1;}
-			| instruccion 
+            : instrucciones instruccion {$$ = $1; $$.push($2);}
+			| instruccion  {$$ = []; $$.push($1);}
           	| error 	{console.error('Error sintáctico: ' + yytext + ',  linea: ' + this._$.first_line + ', columna: ' + this._$.first_column);}
 ;
 
 instruccion
 	// Sentencias principales
-	: Variables PUNTO_C
-	| Incremento_Decremento PUNTO_C
-	| Vectores PUNTO_C
-	| Sentencias_Control 
-	| Sen_Ciclicas
-	| Funcs_Methods
-	| Sen_Cout PUNTO_C
+	: Variables PUNTO_C              {$$ = $1;}
+	| Incremento_Decremento PUNTO_C  {$$ = $1;}
+	| Vectores PUNTO_C               {$$ = $1;}
+	| Sentencias_Control             {$$ = $1;}
+	| Sen_Ciclicas                   {$$ = $1;}
+	| Funcs_Methods                  {$$ = $1;}
+	| Sen_Cout PUNTO_C               {$$ = $1;}
 	
 	// Partes de las sentencias principales
-	| Llamadas_Funcs_Methods PUNTO_C
-	| BREAK PUNTO_C // SOLO DENTRO DE CICLOS
-	| CONTINUE PUNTO_C // SOLO DENTRO DE CICLOS
-	| RETURN Valores PUNTO_C // SOLO DENTRO DE CICLOS Y FUNCIONES
-	| RETURN PUNTO_C // SOLO DENTRO DE CICLOS Y FUNCIONES
-	| Sen_Execute PUNTO_C // selecciona la función main a ejecutar
+	| Llamadas_Funcs_Methods PUNTO_C {$$ = $1;}
+	| BREAK PUNTO_C                  {$$ = $1;} // SOLO DENTRO DE CICLOS
+	| CONTINUE PUNTO_C               {$$ = $1;}// SOLO DENTRO DE CICLOS
+	| RETURN Valores PUNTO_C         {$$ = $1;}// SOLO DENTRO DE CICLOS Y FUNCIONES
+	| RETURN PUNTO_C                 {$$ = $1;}// SOLO DENTRO DE CICLOS Y FUNCIONES
+	| Sen_Execute PUNTO_C            {$$ = $1;}// selecciona la función main a ejecutar
 ;
 
 // Variables
@@ -248,8 +253,12 @@ Tipo_Dato
 ;
 
 Vectores_Acceso // Acceso de valores de un vector vectores
-            : ID C_Abre Valores C_Cierra // 1 dimensión
-			| ID C_Abre Valores C_Cierra C_Abre Valores C_Cierra 
+            : ID C_Abre Valores C_Cierra {if(structs.Identificadores[$1].tipo.toLowerCase()=="std::string".toLowerCase()){type="STRING"}else{ type =structs.Identificadores[$1].tipo;} $$= structs.Identificadores[$1].valor[$3.valor]; }// 1 dimensión
+			| ID C_Abre Valores C_Cierra C_Abre Valores C_Cierra
+			{ if(structs.Identificadores[$1].tipo.toLowerCase()=="std::string".toLowerCase())
+			{type="STRING"}
+			else{ type =structs.Identificadores[$1].tipo;} 
+			$$= structs.Identificadores[$1].valor[$3.valor][$6.valor]; } //2 dimensiones
 ;
 
 Variables // Todo tipo de variables
@@ -271,8 +280,8 @@ Valores // retorna objeto con tipo y valor
 	| BOOLEANO                                   { $$ = GetDato($1, "BOOL", @1.first_line, @1.first_column); }
 	| CAR                                        { $$ = GetDato($1, "CHAR", @1.first_line, @1.first_column); }
 	| CAD                                        { $$ = GetDato($1, "STRING", @1.first_line, @1.first_column); }
-	| Vectores_Acceso  // acceso a valores
-	| ID                                         { llamada={ Id:$1, Modo:"Vars", }; $$= GetDato(structs.interpretar(llamada).valor , structs.interpretar(llamada).tipo.toUpperCase()); }// Llamamos la variable
+	| Vectores_Acceso                            { $$ = GetDato($1, type.toUpperCase(), @1.first_line, @1.first_column); }  // acceso a valores 
+	| ID                                         { llamada={ Id:$1, }; $$= GetDato(structs.interpretar(llamada).valor , structs.interpretar(llamada).tipo.toUpperCase()); }// Llamamos la variable
 	| Llamadas_Funcs_Methods // Solo podrán ir funciones
 	| Funciones
 	| Natives_Funcs 
@@ -280,7 +289,7 @@ Valores // retorna objeto con tipo y valor
 
 Tipos_Valores
             : Valores {$$=$1;}
-			| P_ABRE Tipo_Dato P_CIERRA Valores //Casteo
+			| P_ABRE Tipo_Dato P_CIERRA Valores {if($1.toUpperCase()=="std::string"){$1="STRING";} $$ = GetDato($4.valor, $1.toUpperCase(), @1.first_line, @1.first_column); }//Casteo 
 ;
 
 Modificador
@@ -400,7 +409,7 @@ Bloque_Else_If
 ;
 
 If_Simple
-        : IF P_ABRE Condicion P_CIERRA LLAVE_A instrucciones LLAVE_C { }
+        : IF P_ABRE Condicion P_CIERRA LLAVE_A instrucciones LLAVE_C  {$$ = new IF($3, $6, @1.first_line, @1.first_column);}
 ;
 
 Sen_IF
@@ -486,14 +495,14 @@ Llamadas_Funcs_Methods
 // imprimir
 
 Sen_Cout
-        : COUT MENOR MENOR Valores { var Imprimir = new Print($4,"no");  Imprimir.interpretar();  	}
+        : COUT MENOR MENOR Valores {  Imprimir = new Print($4,"no");  Imprimir.interpretar();  }
 		| COUT MENOR MENOR Valores MENOR MENOR ENDL { var Imprimir = new Print($4,"si"); Imprimir.interpretar(); }
 ;
 
 // Funciones
 
 Funciones
-        : TOLOWER P_ABRE Valores P_CIERRA
+        : TOLOWER P_ABRE Valores P_CIERRA 
 		| TOUPPER P_ABRE Valores P_CIERRA
 		| ROUND P_ABRE Valores P_CIERRA
 ;

@@ -1,34 +1,31 @@
-const { TipoDato } = require("../Expresion");
-const { Instruccion, TipoInstr } = require("../instruccion");
-const Entorno = require("../entorno/Entorno");
+const  Instruccion = require("../Instruccion");
+
 
 class If extends Instruccion{
-    constructor(condicion, instr_if, fila, columna){
-        super(TipoInstr.IF, fila, columna);
+    constructor(condicion, Codigo, fila, columna){
+        super();
         this.condicion = condicion;
-        this.instr_if = instr_if;
+        this.Codigo = Codigo;
+        this.fila=fila;
+        this.columna=columna;
     }
 
     interpretar(entorno){
-        let entornoIf = new Entorno(TipoInstr.IF, entorno);
-        this.condicion.interpretar(entornoIf);
 
-        if(this.condicion.tipo != TipoDato.BOOLEAN){
+        if(this.condicion != true || this.condicion !=false){
             console.log("Error Semántico: la condicion del if debe ser tipo boolean");
             return this;
         }
 
-        if(String(this.condicion.valor).toLowerCase() === "true"){
-            for (let i = 0; i < this.instr_if.length; i++) {
-                let instruccion = this.instr_if[i]
-                instruccion.interpretar(entornoIf);
-                if(instruccion.tipo == TipoInstr.BREAK){
-                    this.tipo = TipoInstr.BREAK;
+        if(this.condicion === true){
+            for (let i = 0; i < this.Codigo.length; i++) {
+                let instruccion = this.Codigo[i];
+                instruccion.interpretar();
+                if(instruccion.toLowerCase() == "break"){
                     break;
                 }
 
-                if(instruccion.tipo == TipoInstr.RETURN){
-                    this.tipo = TipoInstr.RETURN;
+                if(instruccion.toLowerCase() == "return"){
                     break;
                 }
             }

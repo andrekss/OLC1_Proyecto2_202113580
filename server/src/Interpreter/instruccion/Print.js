@@ -1,4 +1,5 @@
 const Instruccion = require("../instruccion.js");
+//const Salida = document.getElementById('Salida'); // Texto entrada
 
 class Print extends Instruccion{
 
@@ -15,9 +16,10 @@ class Print extends Instruccion{
         }
         
         if (this.Salto=="si"){
-         console.log(this.expresion.valor);
+         console.log(this.expresion.valor+"\n");
         }else{
-            process.stdout.write(this.expresion.valor.toString());
+            console.log(this.expresion.valor);
+        
         }
     }
 

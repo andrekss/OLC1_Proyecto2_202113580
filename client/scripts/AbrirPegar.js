@@ -2,7 +2,6 @@ const ArchivoIn = document.getElementById('ArchivoIn');  // archivo
 const AbrirArchivo = document.getElementById('AbrirArchivo'); // boton abrir archivo
 const entradaTextarea = document.getElementById('Entrada'); // Texto entrada
 
-
 AbrirArchivo.addEventListener('click', () => {
     ArchivoIn.click();
 });

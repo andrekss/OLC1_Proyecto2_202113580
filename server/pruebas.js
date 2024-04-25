@@ -306,4 +306,8 @@ Fin de la prueba
 */
 `
 
-Ejecutar.parse(Entrada2);
+//Ejecutar.parse(Entrada2);
+
+const mensaje = "Mensaje sin salto de línea";
+console.log(mensaje, "");
+console.log("que","")
